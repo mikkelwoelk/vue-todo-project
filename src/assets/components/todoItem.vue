@@ -10,7 +10,7 @@
     >
         <div
             class="todo-checked-overlay"
-            :class="{ isChecked: overlay === true }"
+            :class="{ isChecked: isChecked === true }"
         ></div>
         <div class="printed-todo-header-container">
             <h3 v-if="!isEditing" class="printed-todo-title">
@@ -102,7 +102,7 @@ export default {
     data() {
         return {
             isEditing: false,
-            overlay: false
+            isChecked: false
         };
     },
 
@@ -115,7 +115,7 @@ export default {
             this.toggleTodoEditing();
         },
         toggleOverlay() {
-            this.overlay = !this.overlay;
+            this.isChecked = !this.isChecked;
         }
     }
 };
