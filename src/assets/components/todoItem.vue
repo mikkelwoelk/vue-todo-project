@@ -101,13 +101,14 @@ export default {
 
     data() {
         return {
-            isEditing: false,
-            isChecked: false
+            isEditing: false, // Value for toggling the editting mode of each todo
+            isChecked: false // Value for toggling the overlay of each todo when a todo is finished
         };
     },
 
     methods: {
         toggleTodoEditing() {
+            // Toggles the edit mode of each todo individually
             this.isEditing = !this.isEditing;
         },
         submitEdit() {
@@ -115,6 +116,7 @@ export default {
             this.toggleTodoEditing();
         },
         toggleOverlay() {
+            // Toggles the overlay of each todo when clicking the "done" checkbox
             this.isChecked = !this.isChecked;
         }
     }
@@ -137,6 +139,10 @@ export default {
     transition: height ease-in-out 0.3s;
 }
 
+.todo-list-item:hover {
+    height: 160px;
+}
+
 .todo-list-item.editMode {
     height: 160px;
 }
@@ -156,10 +162,6 @@ export default {
 
 .todo-checked-overlay.isChecked {
     opacity: 1;
-}
-
-.todo-list-item:hover {
-    height: 160px;
 }
 
 .lvl-clr-green {
