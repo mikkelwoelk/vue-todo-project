@@ -9,7 +9,10 @@
             <h1>{{ header }}</h1>
             <h2>{{ subheader }}</h2>
         </div>
-        <div id="form-container">
+        <div
+            id="form-container"
+            :class="{ pendingSubmit: newTodo.title !== '' }"
+        >
             <form @submit.prevent="addTodo">
                 <input
                     type="text"
@@ -292,6 +295,10 @@ form {
 #user-todo-input {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+}
+
+#form-container.pendingSubmit {
+    max-height: 280px;
 }
 
 #form-container:focus-within {
