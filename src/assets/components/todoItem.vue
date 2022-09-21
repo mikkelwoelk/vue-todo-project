@@ -1,99 +1,96 @@
 <template>
-    <transition name="fade-left">
-        <li
-            v-if="isPosted"
-            class="todo-list-item"
-            :class="{
-                'lvl-clr-green': importance.color === 'green',
-                'lvl-clr-yellow': importance.color === 'yellow',
-                'lvl-clr-red': importance.color === 'red',
-                editMode: isEditing
-            }"
-        >
-            <div
-                class="todo-checked-overlay"
-                :class="{ isChecked: isChecked }"
-            ></div>
-            <div class="printed-todo-header-container">
-                <h3 v-if="!isEditing" class="printed-todo-title">
-                    {{ title }}
-                </h3>
-                <input
-                    v-else
-                    type="text"
-                    name="todoEditTitle"
-                    class="printed-todo-editing-title"
-                    maxlength="25"
-                    v-model="title"
-                    @keyup.enter="() => submitEdit()"
-                />
-                <time v-if="!isEditing" class="printed-todo-date"
-                    >Due {{ date }}</time
-                >
-                <input
-                    v-else
-                    type="datetime-local"
-                    name="editDeadline"
-                    class="printed-todo-editing-deadline"
-                    v-model="date"
-                />
-                <div class="printed-todo-checkbox-container">
-                    <div class="printed-todo-checkbox-wrapper">
-                        <input
-                            type="checkbox"
-                            name="todoCheckbox"
-                            class="todo-checkbox"
-                            @click="() => toggleOverlay()"
-                        />
-                    </div>
+    <li
+        class="todo-list-item"
+        :class="{
+            'lvl-clr-green': importance.color === 'green',
+            'lvl-clr-yellow': importance.color === 'yellow',
+            'lvl-clr-red': importance.color === 'red',
+            editMode: isEditing
+        }"
+    >
+        <div
+            class="todo-checked-overlay"
+            :class="{ isChecked: isChecked }"
+        ></div>
+        <div class="printed-todo-header-container">
+            <h3 v-if="!isEditing" class="printed-todo-title">
+                {{ title }}
+            </h3>
+            <input
+                v-else
+                type="text"
+                name="todoEditTitle"
+                class="printed-todo-editing-title"
+                maxlength="25"
+                v-model="title"
+                @keyup.enter="() => submitEdit()"
+            />
+            <time v-if="!isEditing" class="printed-todo-date"
+                >Due {{ date }}</time
+            >
+            <input
+                v-else
+                type="datetime-local"
+                name="editDeadline"
+                class="printed-todo-editing-deadline"
+                v-model="date"
+            />
+            <div class="printed-todo-checkbox-container">
+                <div class="printed-todo-checkbox-wrapper">
+                    <input
+                        type="checkbox"
+                        name="todoCheckbox"
+                        class="todo-checkbox"
+                        @click="() => toggleOverlay()"
+                    />
                 </div>
             </div>
-            <div class="printed-todo-line"></div>
-            <div class="printed-todo-dropdown-container">
-                <p v-if="!isEditing" class="printed-todo-desc">
-                    {{ description }}
-                </p>
-                <textarea
-                    v-else
-                    type="text"
-                    name="todoEditDesc"
-                    class="printed-todo-editing-desc"
-                    maxlength="200"
-                    v-model="description"
-                    @keyup.enter="() => submitEdit()"
-                />
-                <div class="printed-todo-button-container">
-                    <div class="printed-todo-button-wrapper">
-                        <input
-                            type="checkbox"
-                            name="todoEdit"
-                            @click="() => submitEdit()"
-                            class="printed-todo-edit-checkbox"
-                        />
-                        <button
-                            class="printed-todo-delete-btn"
-                            aria-label="Delete"
-                            @click="() => $emit('remove')"
+        </div>
+        <div class="printed-todo-line"></div>
+        <div class="printed-todo-dropdown-container">
+            <p v-if="!isEditing" class="printed-todo-desc">
+                {{ description }}
+            </p>
+            <textarea
+                v-else
+                type="text"
+                name="todoEditDesc"
+                class="printed-todo-editing-desc"
+                maxlength="200"
+                v-model="description"
+                @keyup.enter="() => submitEdit()"
+            />
+            <div class="printed-todo-button-container">
+                <div class="printed-todo-button-wrapper">
+                    <input
+                        type="checkbox"
+                        name="todoEdit"
+                        @click="() => submitEdit()"
+                        class="printed-todo-edit-checkbox"
+                    />
+                    <button
+                        class="printed-todo-delete-btn"
+                        aria-label="Delete"
+                        @click="() => $emit('remove')"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            preserveAspectRatio="xMidYMid meet"
+                            viewBox="0 0 448 512"
+                            aria-hidden="true"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                preserveAspectRatio="xMidYMid meet"
-                                viewBox="0 0 448 512"
-                                aria-hidden="true"
-                            >
-                                <path
-                                    fill="currentColor"
-                                    d="M160 400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16v208zm80 0c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16v208zm80 0c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16v208zm-2.5-375.06L354.2 80H424c13.3 0 24 10.75 24 24c0 13.3-10.7 24-24 24h-8v304c0 44.2-35.8 80-80 80H112c-44.18 0-80-35.8-80-80V128h-8c-13.25 0-24-10.7-24-24c0-13.25 10.75-24 24-24h69.82l36.68-55.06C140.9 9.357 158.4 0 177.1 0h93.8c18.7 0 36.2 9.358 46.6 24.94zM151.5 80h145l-19-28.44c-1.5-2.22-4-3.56-6.6-3.56h-93.8c-2.6 0-6 1.34-6.6 3.56L151.5 80zM80 432c0 17.7 14.33 32 32 32h224c17.7 0 32-14.3 32-32V128H80v304z"
-                                />
-                            </svg>
-                        </button>
-                    </div>
+                            <path
+                                fill="currentColor"
+                                d="M160 400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16v208zm80 0c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16v208zm80 0c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16v208zm-2.5-375.06L354.2 80H424c13.3 0 24 10.75 24 24c0 13.3-10.7 24-24 24h-8v304c0 44.2-35.8 80-80 80H112c-44.18 0-80-35.8-80-80V128h-8c-13.25 0-24-10.7-24-24c0-13.25 10.75-24 24-24h69.82l36.68-55.06C140.9 9.357 158.4 0 177.1 0h93.8c18.7 0 36.2 9.358 46.6 24.94zM151.5 80h145l-19-28.44c-1.5-2.22-4-3.56-6.6-3.56h-93.8c-2.6 0-6 1.34-6.6 3.56L151.5 80zM80 432c0 17.7 14.33 32 32 32h224c17.7 0 32-14.3 32-32V128H80v304z"
+                            />
+                        </svg>
+                    </button>
                 </div>
             </div>
-        </li>
-    </transition>
+        </div>
+    </li>
 </template>
 
 <script>
@@ -157,7 +154,7 @@ export default {
         box-shadow: 0px 0px 20px var(--clr-accent-darkest);
     }
     50% {
-        box-shadow: 0px 0px 40px var(--clr-accent-light);
+        box-shadow: 0px 0px 30px var(--clr-accent-light);
     }
     100% {
         box-shadow: 0px 0px 20px var(--clr-accent-darkest);
