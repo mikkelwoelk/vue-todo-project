@@ -1,94 +1,114 @@
 <template>
     <div id="app">
-        <div id="header-container">
-            <img
-                src="./assets/logo.png"
-                id="app-logo"
-                alt="Todo list clipboard"
-            />
-            <h1>{{ header }}</h1>
-            <h2>{{ subheader }}</h2>
-        </div>
-        <div
-            id="form-container"
-            :class="{ pendingSubmit: newTodo.title !== '' }"
-        >
-            <form @submit.prevent="addTodo">
-                <input
-                    type="text"
-                    name="todoTitle"
-                    id="user-todo-input"
-                    placeholder="Add a new Todo"
-                    maxlength="25"
-                    required
-                    v-model.trim="newTodo.title"
-                />
-                <input
-                    type="text"
-                    name="todoDesc"
-                    id="user-desc-input"
-                    placeholder="Describe it further if needed.."
-                    maxlength="200"
-                    v-model.trim="newTodo.description"
-                />
-                <div id="radio-container">
-                    <input
-                        class="importance-radio"
-                        type="radio"
-                        name="importance"
-                        id="todo-importance-radio-green"
-                        style="background: rgb(111, 200, 65);"
-                        checked
-                        @change="onImportanceChange($event, 'green', 1)"
-                    />
-                    <input
-                        class="importance-radio"
-                        type="radio"
-                        name="importance"
-                        id="todo-importance-radio-yellow"
-                        style="background: rgb(197, 200, 65);"
-                        @change="onImportanceChange($event, 'yellow', 2)"
-                    />
-                    <input
-                        class="importance-radio"
-                        type="radio"
-                        name="importance"
-                        id="todo-importance-radio-red"
-                        style="background-color: rgb(200, 65, 65);"
-                        @change="onImportanceChange($event, 'red', 3)"
-                    />
+        <transition name="fade">
+            <div v-if="showDelete" class="delete-prompt">
+                <span>Are you sure you want to delete this todo?</span>
+                <div class="button-wrapper">
+                    <button @click="() => deleteTodo(index)">
+                        I'm sure
+                    </button>
+                    <button @click="() => toggleDeletePrompt()">
+                        Hell no!
+                    </button>
                 </div>
-                <input
-                    type="datetime-local"
-                    name="deadline"
-                    id="todo-deadline"
-                    v-model="newTodo.date"
-                />
-                <button
-                    id="submit-btn"
-                    type="submit"
-                    :class="[newTodo.title ? activeClass : '']"
-                >
-                    add todo
-                </button>
-            </form>
-        </div>
-        <div id="todos-container">
-            <div id="todo-filter-button-container">
-                <button @click="sortImportanceLow">Sort importance: Low</button>
-                <button @click="sortImportanceHigh">
-                    Sort importance: High
-                </button>
             </div>
-            <ul id="todo-list">
-                <todoItem
-                    v-for="(todo, index) in todos"
-                    :key="`todo-${index}`"
-                    v-bind="todo"
-                    @remove="() => deleteTodo(index)"
-                >
-                </todoItem>
-            </ul>
+        </transition>
+        <div
+            class="app-wrapper"
+            :class="[showDelete ? blurClass : '', bkClass]"
+        >
+            <div id="header-container">
+                <img
+                    src="./assets/logo.png"
+                    id="app-logo"
+                    alt="Todo list clipboard"
+                />
+                <h1>{{ header }}</h1>
+                <h2>{{ subheader }}</h2>
+            </div>
+            <div
+                id="form-container"
+                :class="{ pendingSubmit: newTodo.title !== '' }"
+            >
+                <form @submit.prevent="addTodo">
+                    <input
+                        type="text"
+                        name="todoTitle"
+                        id="user-todo-input"
+                        placeholder="Add a new Todo"
+                        maxlength="25"
+                        required
+                        v-model.trim="newTodo.title"
+                    />
+                    <input
+                        type="text"
+                        name="todoDesc"
+                        id="user-desc-input"
+                        placeholder="Describe it further if needed.."
+                        maxlength="200"
+                        v-model.trim="newTodo.description"
+                    />
+                    <div id="radio-container">
+                        <input
+                            class="importance-radio"
+                            type="radio"
+                            name="importance"
+                            id="todo-importance-radio-green"
+                            style="background: rgb(111, 200, 65);"
+                            checked
+                            @change="onImportanceChange($event, 'green', 1)"
+                        />
+                        <input
+                            class="importance-radio"
+                            type="radio"
+                            name="importance"
+                            id="todo-importance-radio-yellow"
+                            style="background: rgb(197, 200, 65);"
+                            @change="onImportanceChange($event, 'yellow', 2)"
+                        />
+                        <input
+                            class="importance-radio"
+                            type="radio"
+                            name="importance"
+                            id="todo-importance-radio-red"
+                            style="background-color: rgb(200, 65, 65);"
+                            @change="onImportanceChange($event, 'red', 3)"
+                        />
+                    </div>
+                    <input
+                        type="datetime-local"
+                        name="deadline"
+                        id="todo-deadline"
+                        v-model="newTodo.date"
+                    />
+                    <button
+                        id="submit-btn"
+                        type="submit"
+                        :class="[newTodo.title ? activeClass : '']"
+                    >
+                        add todo
+                    </button>
+                </form>
+            </div>
+            <div id="todos-container">
+                <div id="todo-filter-button-container">
+                    <button @click="sortImportanceLow">
+                        Sort importance: Low
+                    </button>
+                    <button @click="sortImportanceHigh">
+                        Sort importance: High
+                    </button>
+                </div>
+                <ul id="todo-list">
+                    <todoItem
+                        v-for="(todo, index) in todos"
+                        :key="`todo-${index}`"
+                        v-bind="todo"
+                        @remove="() => toggleDeletePrompt(index)"
+                    >
+                    </todoItem>
+                </ul>
+            </div>
         </div>
     </div>
 </template>
@@ -142,7 +162,11 @@ export default {
                 }
             ],
             activeClass: "isActive", // Class style for when the submit button is active (Activates when the user types something in the todo title input)
-            dateTime: "" // Empty string for storing the date and time (updateTime() updates the date/time in the date picker every minute)
+            dateTime: "", // Empty string for storing the date and time (updateTime() updates the date/time in the date picker every minute)
+            showDelete: false,
+            bkClass: "bk",
+            blurClass: "blur",
+            random: -1
         };
     },
     methods: {
@@ -186,14 +210,13 @@ export default {
                 a.importance.num < b.importance.num ? 1 : -1
             );
         },
+        toggleDeletePrompt(index) {
+            this.showDelete = !this.showDelete;
+        },
         deleteTodo(index) {
-            // Prompts the user with a confirm alert when trying to delete a todo
-            if (confirm("Are you sure you want to delete this todo?")) {
-                // Deletes a todo by removing it from the array
-                this.todos.splice(index, 1);
-            } else {
-                return;
-            }
+            // Deletes a todo by removing it from the array
+            this.todos.splice(index, 1);
+            this.showDelete = false;
         }
     },
     mounted: function() {
@@ -243,6 +266,15 @@ body {
     text-align: center;
     color: #2c3e50;
     width: min(90%, 500px);
+}
+
+.bk {
+    transition: all 0.25s;
+}
+
+.blur {
+    filter: blur(2px);
+    opacity: 0.5;
 }
 
 /** Header section styles */
@@ -376,6 +408,53 @@ form {
 }
 
 /** Todo section styles */
+
+.delete-prompt {
+    position: fixed;
+    width: 25rem;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background-color: var(--clr-primary);
+    border-radius: 20px;
+    z-index: 100;
+    left: 50%;
+    top: 50%;
+    translate: -50% -100%;
+    box-shadow: 0px 0px 20px var(--clr-accent-darkest);
+}
+
+.delete-prompt span {
+    color: var(--clr-text);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.delete-prompt .button-wrapper {
+    margin: 0 0.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.delete-prompt button {
+    padding: 1rem 1.5rem;
+    border-radius: 5px;
+    color: var(--clr-text);
+    background-color: var(--clr-accent-darkest);
+    cursor: pointer;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: all 0.25s;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+    translate: -50% 50%;
+}
+
 #todo-filter-button-container {
     display: flex;
     justify-content: space-between;
