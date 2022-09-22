@@ -4,7 +4,7 @@
             <div v-if="showDelete" class="delete-prompt">
                 <span>Are you sure you want to delete this todo?</span>
                 <div class="button-wrapper">
-                    <button @click="() => deleteTodo(index)">
+                    <button @click="() => deleteTodo()">
                         I'm sure
                     </button>
                     <button @click="() => toggleDeletePrompt()">
@@ -15,7 +15,7 @@
         </transition>
         <div
             class="app-wrapper"
-            :class="[showDelete ? blurClass : '', bkClass]"
+            :class="[showDelete ? blurClass : '', bbClass]"
         >
             <div id="header-container">
                 <img
@@ -100,13 +100,19 @@
                     </button>
                 </div>
                 <ul id="todo-list">
-                    <todoItem
-                        v-for="(todo, index) in todos"
-                        :key="`todo-${index}`"
-                        v-bind="todo"
-                        @remove="() => toggleDeletePrompt(index)"
+                    <transition-group
+                        name="fadeIn"
+                        enter-active-class="fade-from-left"
+                        leave-active-class="scale-out"
                     >
-                    </todoItem>
+                        <todoItem
+                            v-for="(todo, index) in todos"
+                            :key="todo.id"
+                            v-bind="todo"
+                            @remove="() => toggleDeletePrompt(index)"
+                        >
+                        </todoItem>
+                    </transition-group>
                 </ul>
             </div>
         </div>
@@ -125,9 +131,9 @@ export default {
             header: "Todo List", // Sets the innerHTML of the h1
             subheader:
                 "Make a new todo! You can also add a description and choose importance.", // Sets the innerHTML of the h2
-
             newTodo: {
                 // Object for a new todo
+                id: "",
                 title: "", // Value for todo title
                 description: "", // Value for todo description
                 importance: { color: "green", num: 1 }, // Value for todo importance (Defaulting to green)
@@ -136,6 +142,7 @@ export default {
             todos: [
                 // Array of todo objects
                 {
+                    id: "1",
                     title: "Make a todo list",
                     description: "It has to have alot of nice features",
                     importance: { color: "green", num: 1 },
@@ -144,6 +151,7 @@ export default {
                         .fromNow()
                 },
                 {
+                    id: "2",
                     title: "This is a medium todo",
                     description: "It has the same color as a banana",
                     importance: { color: "yellow", num: 2 },
@@ -152,6 +160,7 @@ export default {
                         .fromNow()
                 },
                 {
+                    id: "3",
                     title: "This is a max length todo",
                     description:
                         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis convallis justo eros, a ullamcorper orci rhoncus sed. Phasellus blandit risus elit, et hendrerit ipsum tempor venenatis. Vestibulum dictum",
@@ -164,9 +173,9 @@ export default {
             activeClass: "isActive", // Class style for when the submit button is active (Activates when the user types something in the todo title input)
             dateTime: "", // Empty string for storing the date and time (updateTime() updates the date/time in the date picker every minute)
             showDelete: false,
-            bkClass: "bk",
-            blurClass: "blur",
-            random: -1
+            deletingIndex: null,
+            bbClass: "backgroundBlur",
+            blurClass: "blur"
         };
     },
     methods: {
@@ -174,6 +183,9 @@ export default {
         addTodo() {
             // Adds a new todo object to the todos array, as well as getting and setting the date/time from the date picker into the todoDate. Then resets the inputs for the next todo (except the importance)
             this.newTodo.date = moment(this.newTodo.date).fromNow(); // Sets the date/time of the todo to the user selected input and shows the time till its due
+            this.newTodo.id = Math.random()
+                .toString(36)
+                .substring(2);
             this.todos.push(this.newTodo); // Pushes the todo object into the todo array
             this.newTodo = {
                 // Resets all of the input in some way
@@ -211,12 +223,13 @@ export default {
             );
         },
         toggleDeletePrompt(index) {
+            this.deletingIndex = index;
             this.showDelete = !this.showDelete;
         },
-        deleteTodo(index) {
-            // Deletes a todo by removing it from the array
-            this.todos.splice(index, 1);
+        deleteTodo() {
             this.showDelete = false;
+            // Deletes a todo by removing it from the array
+            this.todos.splice(this.deletingIndex, 1);
         }
     },
     mounted: function() {
@@ -268,7 +281,7 @@ body {
     width: min(90%, 500px);
 }
 
-.bk {
+.backgroundBlur {
     transition: all 0.25s;
 }
 
@@ -416,7 +429,7 @@ form {
     flex-direction: column;
     padding: 2rem;
     background-color: var(--clr-primary);
-    border-radius: 20px;
+    border-radius: 10px;
     z-index: 100;
     left: 50%;
     top: 50%;
@@ -446,7 +459,7 @@ form {
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: all 0.25s;
+    transition: all 0.3s;
 }
 
 .fade-enter,
@@ -474,5 +487,39 @@ form {
     list-style-type: none;
     display: flex;
     flex-direction: column;
+}
+
+.fade-from-left {
+    animation: fade-from-left 0.5s ease-out;
+}
+
+@keyframes fade-from-left {
+    0% {
+        opacity: 0;
+        transform: translateX(-25%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0%);
+    }
+}
+
+.scale-out {
+    animation: scale-out 0.5s ease-in;
+    animation-delay: 0.25s;
+}
+
+@keyframes scale-out {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    60% {
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0);
+    }
 }
 </style>
