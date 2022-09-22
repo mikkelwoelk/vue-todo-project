@@ -5,7 +5,8 @@
             'lvl-clr-green': importance.color === 'green',
             'lvl-clr-yellow': importance.color === 'yellow',
             'lvl-clr-red': importance.color === 'red',
-            editMode: isEditing
+            editMode: isEditing,
+            expand: isClicked
         }"
     >
         <div
@@ -13,28 +14,33 @@
             :class="{ isChecked: isChecked }"
         ></div>
         <div class="printed-todo-header-container">
-            <h3 v-if="!isEditing" class="printed-todo-title">
-                {{ title }}
-            </h3>
-            <input
-                v-else
-                type="text"
-                name="todoEditTitle"
-                class="printed-todo-editing-title"
-                maxlength="25"
-                v-model="title"
-                @keyup.enter="() => submitEdit()"
-            />
-            <time v-if="!isEditing" class="printed-todo-date"
-                >Due {{ date }}</time
+            <div
+                class="printed-todo-header-wrapper"
+                @click="() => toggleExpand()"
             >
-            <input
-                v-else
-                type="datetime-local"
-                name="editDeadline"
-                class="printed-todo-editing-deadline"
-                v-model="date"
-            />
+                <h3 v-if="!isEditing" class="printed-todo-title">
+                    {{ title }}
+                </h3>
+                <input
+                    v-else
+                    type="text"
+                    name="todoEditTitle"
+                    class="printed-todo-editing-title"
+                    maxlength="25"
+                    v-model="title"
+                    @keyup.enter="() => submitEdit()"
+                />
+                <time v-if="!isEditing" class="printed-todo-date"
+                    >Due {{ date }}</time
+                >
+                <input
+                    v-else
+                    type="datetime-local"
+                    name="editDeadline"
+                    class="printed-todo-editing-deadline"
+                    v-model="date"
+                />
+            </div>
             <div class="printed-todo-checkbox-container">
                 <div class="printed-todo-checkbox-wrapper">
                     <input
@@ -102,7 +108,8 @@ export default {
     data() {
         return {
             isEditing: false, // Value for toggling the editting mode of each todo
-            isChecked: false // Value for toggling the overlay of each todo when a todo is finished
+            isChecked: false, // Value for toggling the overlay of each todo when a todo is finished
+            isClicked: false // Value for checking is a todo item is clicked ( used for applting a class that expands it )
         };
     },
 
@@ -118,6 +125,9 @@ export default {
         toggleOverlay() {
             // Toggles the overlay of each todo when clicking the "done" checkbox
             this.isChecked = !this.isChecked;
+        },
+        toggleExpand() {
+            this.isClicked = !this.isClicked;
         }
     }
 };
@@ -139,7 +149,7 @@ export default {
     transition: height 0.3s, box-shadow 0.3s;
 }
 
-.todo-list-item:hover {
+.todo-list-item.expand {
     height: 160px;
 }
 
@@ -207,8 +217,15 @@ export default {
 
 .printed-todo-header-container {
     display: grid;
-    grid-template-columns: 3.5fr 1.5fr 0.25fr;
+    grid-template-columns: 3.5fr 0.5fr;
     gap: 1rem;
+    align-items: center;
+}
+
+.printed-todo-header-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
 }
 
