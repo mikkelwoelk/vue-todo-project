@@ -1,81 +1,81 @@
 <template>
     <li
-        class="todo-list-item"
+        class="c-todo-item"
         :class="{
-            'lvl-clr-green': importance.color === 'green',
-            'lvl-clr-yellow': importance.color === 'yellow',
-            'lvl-clr-red': importance.color === 'red',
-            editMode: isEditing,
-            expand: isClicked
+            'c-todo-item--importance-green': importance.color === 'green',
+            'c-todo-item--importance-yellow': importance.color === 'yellow',
+            'c-todo-item--importance-red': importance.color === 'red',
+            isEditing: isEditing,
+            isExpanded: isClicked
         }"
     >
         <div
-            class="todo-checked-overlay"
+            class="c-todo-item__overlay"
             :class="{ isChecked: isChecked }"
         ></div>
-        <div class="printed-todo-header-container">
+        <div class="c-todo-item__header-container">
             <div
-                class="printed-todo-header-wrapper"
+                class="c-todo-item__header-wrapper"
                 @click="() => toggleExpand()"
             >
-                <h3 v-if="!isEditing" class="printed-todo-title">
+                <h3 v-if="!isEditing" class="c-todo-item__title">
                     {{ title }}
                 </h3>
                 <input
                     v-else
                     type="text"
                     name="todoEditTitle"
-                    class="printed-todo-editing-title"
+                    class="c-todo-item__title-editing"
                     maxlength="25"
                     v-model="title"
                     @keyup.enter="() => submitEdit()"
                 />
-                <time v-if="!isEditing" class="printed-todo-date"
+                <time v-if="!isEditing" class="c-todo-item__date"
                     >Due {{ date }}</time
                 >
                 <input
                     v-else
                     type="datetime-local"
                     name="editDeadline"
-                    class="printed-todo-editing-deadline"
+                    class="c-todo-item__date-editing"
                     v-model="date"
                 />
             </div>
-            <div class="printed-todo-checkbox-container">
-                <div class="printed-todo-checkbox-wrapper">
+            <div class="c-todo-item__checkbox-container">
+                <div class="c-todo-item__checkbox-wrapper">
                     <input
                         type="checkbox"
                         name="todoCheckbox"
-                        class="todo-checkbox"
+                        class="c-todo-item__checkbox"
                         @click="() => toggleOverlay()"
                     />
                 </div>
             </div>
         </div>
-        <div class="printed-todo-line"></div>
-        <div class="printed-todo-dropdown-container">
-            <p v-if="!isEditing" class="printed-todo-desc">
+        <div class="c-todo-item__separation-line"></div>
+        <div class="c-todo-item__dropdown-container">
+            <p v-if="!isEditing" class="c-todo-item__description">
                 {{ description }}
             </p>
             <textarea
                 v-else
                 type="text"
                 name="todoEditDesc"
-                class="printed-todo-editing-desc"
+                class="c-todo-item__description-editing"
                 maxlength="200"
                 v-model="description"
                 @keyup.enter="() => submitEdit()"
             />
-            <div class="printed-todo-button-container">
-                <div class="printed-todo-button-wrapper">
+            <div class="c-todo-item__button-container">
+                <div class="c-todo-item__button-wrapper">
                     <input
                         type="checkbox"
                         name="todoEdit"
                         @click="() => submitEdit()"
-                        class="printed-todo-edit-checkbox"
+                        class="c-todo-item__edit-checkbox"
                     />
                     <button
-                        class="printed-todo-delete-btn"
+                        class="c-todo-item__delete-btn"
                         aria-label="Delete"
                         @click="() => $emit('remove')"
                     >
@@ -134,7 +134,7 @@ export default {
 </script>
 
 <style scoped>
-.todo-list-item {
+.c-todo-item {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -149,17 +149,17 @@ export default {
     transition: height 0.3s, box-shadow 0.3s;
 }
 
-.todo-list-item.expand {
+.c-todo-item.isExpanded {
     height: 160px;
 }
 
-.todo-list-item.editMode {
+.c-todo-item.isEditing {
     height: 160px;
     box-shadow: 0px 0px 20px var(--clr-secondary);
-    animation: editModeActive 1.5s infinite;
+    animation: edit-mode-active 1.5s infinite;
 }
 
-@keyframes editModeActive {
+@keyframes edit-mode-active {
     0% {
         box-shadow: 0px 0px 20px var(--clr-accent-darkest);
     }
@@ -171,7 +171,7 @@ export default {
     }
 }
 
-.todo-checked-overlay {
+.c-todo-item__overlay {
     position: absolute;
     left: 0;
     top: 0;
@@ -184,11 +184,11 @@ export default {
     opacity: 0;
 }
 
-.todo-checked-overlay.isChecked {
+.c-todo-item__overlay.isChecked {
     opacity: 1;
 }
 
-.lvl-clr-green {
+.c-todo-item--importance-green {
     background: rgb(111, 200, 65);
     background: linear-gradient(
         90deg,
@@ -197,7 +197,7 @@ export default {
     );
 }
 
-.lvl-clr-yellow {
+.c-todo-item--importance-yellow {
     background: rgb(197, 200, 65);
     background: linear-gradient(
         90deg,
@@ -206,7 +206,7 @@ export default {
     );
 }
 
-.lvl-clr-red {
+.c-todo-item--importance-red {
     background: rgb(200, 65, 65);
     background: linear-gradient(
         90deg,
@@ -215,38 +215,40 @@ export default {
     );
 }
 
-.printed-todo-header-container {
+.c-todo-item__header-container {
     display: grid;
     grid-template-columns: 3.5fr 0.5fr;
     gap: 1rem;
     align-items: center;
+    justify-content: space-between;
 }
 
-.printed-todo-header-wrapper {
+.c-todo-item__header-wrapper {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
-.printed-todo-title,
-.printed-todo-editing-title {
+.c-todo-item__title,
+.c-todo-item__title-editing {
     text-align: left;
     margin-left: 5px;
     font-size: 2rem;
 }
 
-.printed-todo-date {
+.c-todo-item__date {
     font-size: 1.2rem;
     justify-self: start;
     padding: 0 1rem;
 }
 
-.printed-todo-editing-deadline {
+.c-todo-item__date-editing {
     position: relative;
 }
 
-.printed-todo-editing-deadline[type="datetime-local"]::-webkit-calendar-picker-indicator {
+.c-todo-item__date-editing[type="datetime-local"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     position: absolute;
     padding: 0;
@@ -256,23 +258,23 @@ export default {
     background: transparent;
 }
 
-.printed-todo-editing-deadline[type="datetime-local"]::after {
+.c-todo-item__date-editing[type="datetime-local"]::after {
     content: url("https://api.iconify.design/akar-icons/calendar.svg?color=white");
 }
 
-.printed-todo-checkbox-container {
+.c-todo-item__checkbox-container {
     display: grid;
     place-items: center;
 }
 
-.printed-todo-checkbox-wrapper {
+.c-todo-item__checkbox-wrapper {
     display: grid;
     justify-self: end;
     place-items: center;
     padding: 0.5rem;
 }
 
-.todo-checkbox[type="checkbox"] {
+.c-todo-item__checkbox[type="checkbox"] {
     position: relative;
     appearance: none;
     width: 2.3rem;
@@ -284,7 +286,7 @@ export default {
     cursor: pointer;
 }
 
-.todo-checkbox[type="checkbox"]::before {
+.c-todo-item__checkbox[type="checkbox"]::before {
     position: absolute;
     content: "";
     width: 12px;
@@ -295,7 +297,7 @@ export default {
     border-radius: 50px;
 }
 
-.todo-checkbox[type="checkbox"]::after {
+.c-todo-item__checkbox[type="checkbox"]::after {
     content: url("https://api.iconify.design/bi/check.svg?color=white");
     scale: 0;
     rotate: -45deg;
@@ -304,18 +306,18 @@ export default {
     margin: 6px -1px 0 0;
 }
 
-.todo-checkbox[type="checkbox"]:checked::after {
+.c-todo-item__checkbox[type="checkbox"]:checked::after {
     scale: 2.2;
     rotate: -12deg;
     opacity: 1;
     transform: translate(1px, -0.5px);
 }
 
-.todo-checkbox[type="checkbox"]:checked ~ .todo-checked-overlay {
+.c-todo-item__checkbox[type="checkbox"]:checked ~ .c-todo-item__overlay {
     opacity: 1;
 }
 
-.printed-todo-line {
+.c-todo-item__separation-line {
     width: 100%;
     height: 1px;
     background: radial-gradient(
@@ -326,15 +328,15 @@ export default {
     margin: 1rem 0;
 }
 
-.printed-todo-dropdown-container {
+.c-todo-item__dropdown-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
 }
 
-.printed-todo-desc,
-.printed-todo-editing-desc {
+.c-todo-item__description,
+.c-todo-item__description-editing {
     width: 75%;
     text-align: left;
     margin-left: 5px;
@@ -343,44 +345,44 @@ export default {
     padding-top: 5px;
 }
 
-.printed-todo-editing-title,
-.printed-todo-editing-desc,
-.printed-todo-editing-deadline {
+.c-todo-item__title-editing,
+.c-todo-item__description-editing,
+.c-todo-item__date-editing {
     background: linear-gradient(90deg, transparent, #4ea69986);
     color: var(--clr-text);
     padding: 5px 5px 5px 0;
 }
 
-.printed-todo-editing-title {
+.c-todo-item__title-editing {
     font-weight: 700;
 }
 
-.printed-todo-button-container {
+.c-todo-item__button-container {
     align-self: end;
 }
 
-.printed-todo-button-wrapper {
+.c-todo-item__button-wrapper {
     display: flex;
     flex-direction: row;
     align-items: baseline;
     justify-content: flex-end;
 }
 
-.printed-todo-edit-checkbox,
-.printed-todo-delete-btn {
+.c-todo-item__edit-checkbox,
+.c-todo-item__delete-btn {
     background-color: transparent;
     color: #fff;
     padding: 0.5rem 0.5rem 0 0.5rem;
     cursor: pointer;
 }
 
-.printed-todo-edit-checkbox[type="checkbox"] {
+.c-todo-item__edit-checkbox[type="checkbox"] {
     appearance: none;
     content: "";
     margin-right: 5px;
 }
 
-.printed-todo-edit-checkbox[type="checkbox"] {
+.c-todo-item__edit-checkbox[type="checkbox"] {
     position: relative;
     appearance: none;
     width: 2.3rem;
@@ -392,7 +394,7 @@ export default {
     cursor: pointer;
 }
 
-.printed-todo-edit-checkbox[type="checkbox"]::before {
+.c-todo-item__edit-checkbox[type="checkbox"]::before {
     position: absolute;
     content: "";
     width: 12px;
@@ -403,7 +405,7 @@ export default {
     border-radius: 50px;
 }
 
-.printed-todo-edit-checkbox[type="checkbox"]::after {
+.c-todo-item__edit-checkbox[type="checkbox"]::after {
     content: url("https://api.iconify.design/humbleicons/pencil.svg?color=white");
     scale: 1.5;
     opacity: 1;
@@ -412,7 +414,7 @@ export default {
     transform: translate(3.5px, -5px);
 }
 
-.printed-todo-edit-checkbox[type="checkbox"]:checked::after {
+.c-todo-item__edit-checkbox[type="checkbox"]:checked::after {
     animation: todo-edit-anim 0.5s;
 }
 
@@ -428,7 +430,7 @@ export default {
     }
 }
 
-.printed-todo-delete-btn {
+.c-todo-item__delete-btn {
     margin-left: 5px;
 }
 </style>
