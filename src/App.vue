@@ -1,9 +1,9 @@
 <template>
     <div id="app">
-        <transition name="fade">
-            <div v-if="showDelete" class="delete-prompt">
+        <transition name="t-fade-up">
+            <div v-if="showDelete" class="c-delete-prompt">
                 <span>Are you sure you want to delete this todo?</span>
-                <div class="button-wrapper">
+                <div class="c-delete-prompt__button-wrapper">
                     <button @click="() => deleteTodo()">
                         I'm sure
                     </button>
@@ -17,7 +17,7 @@
             class="app-wrapper"
             :class="[showDelete ? blurClass : '', bbClass]"
         >
-            <div id="header-container">
+            <div id="c-header__container">
                 <img
                     src="./assets/logo.png"
                     id="app-logo"
@@ -27,14 +27,14 @@
                 <h2>{{ subheader }}</h2>
             </div>
             <div
-                id="form-container"
+                id="c-form__container"
                 :class="{ pendingSubmit: newTodo.title !== '' }"
             >
                 <form @submit.prevent="addTodo">
                     <input
                         type="text"
                         name="todoTitle"
-                        id="user-todo-input"
+                        id="c-form__title-input"
                         placeholder="Add a new Todo"
                         maxlength="25"
                         required
@@ -43,17 +43,17 @@
                     <input
                         type="text"
                         name="todoDesc"
-                        id="user-desc-input"
+                        id="c-form__description-input"
                         placeholder="Describe it further if needed.."
                         maxlength="200"
                         v-model.trim="newTodo.description"
                     />
-                    <div id="radio-container">
+                    <div id="c-form__radio-container">
                         <input
                             class="importance-radio"
                             type="radio"
                             name="importance"
-                            id="todo-importance-radio-green"
+                            id="c-form__importance-radio-green"
                             style="background: rgb(111, 200, 65);"
                             checked
                             @change="onImportanceChange($event, 'green', 1)"
@@ -62,7 +62,7 @@
                             class="importance-radio"
                             type="radio"
                             name="importance"
-                            id="todo-importance-radio-yellow"
+                            id="c-form__importance-radio-yellow"
                             style="background: rgb(197, 200, 65);"
                             @change="onImportanceChange($event, 'yellow', 2)"
                         />
@@ -70,7 +70,7 @@
                             class="importance-radio"
                             type="radio"
                             name="importance"
-                            id="todo-importance-radio-red"
+                            id="c-form__importance-radio-red"
                             style="background-color: rgb(200, 65, 65);"
                             @change="onImportanceChange($event, 'red', 3)"
                         />
@@ -78,11 +78,11 @@
                     <input
                         type="datetime-local"
                         name="deadline"
-                        id="todo-deadline"
+                        id="c-form__deadline-input"
                         v-model="newTodo.date"
                     />
                     <button
-                        id="submit-btn"
+                        id="c-form__submit-btn"
                         type="submit"
                         :class="[newTodo.title ? activeClass : '']"
                     >
@@ -90,8 +90,8 @@
                     </button>
                 </form>
             </div>
-            <div id="todos-container">
-                <div id="todo-filter-button-container">
+            <div id="c-todos-container">
+                <div id="c-todo-filter__button-container">
                     <button @click="sortImportanceLow">
                         Sort importance: Low
                     </button>
@@ -99,11 +99,12 @@
                         Sort importance: High
                     </button>
                 </div>
-                <ul id="todo-list">
+                <ul id="c-todo-list">
                     <transition-group
-                        name="fadeIn"
+                        name="t-fade-in"
                         enter-active-class="fade-from-left"
                         leave-active-class="scale-out"
+                        appear
                     >
                         <todoItem
                             v-for="(todo, index) in todos"
@@ -213,13 +214,13 @@ export default {
         sortImportanceLow() {
             // Sorts todos after lowest importance by sorting after the importanceNum dependency
             this.todos.sort((a, b) =>
-                a.importance.num > b.importance.num ? 1 : -1
+                a.importance.num >= b.importance.num ? 1 : -1
             );
         },
         sortImportanceHigh() {
             // Sorts todos after highest importance by sorting after the importanceNum dependency
             this.todos.sort((a, b) =>
-                a.importance.num < b.importance.num ? 1 : -1
+                a.importance.num <= b.importance.num ? 1 : -1
             );
         },
         toggleDeletePrompt(index) {
@@ -315,7 +316,7 @@ form {
     flex-direction: column;
 }
 
-#form-container {
+#c-form__container {
     margin: 2rem 0;
     box-shadow: 0px 0px 20px var(--clr-accent-darkest);
     border-radius: 10px;
@@ -324,7 +325,7 @@ form {
     transition: max-height ease-in-out 1s;
 }
 
-#form-container input {
+#c-form__container input {
     padding: 2rem 2rem;
     border-bottom: 1px solid var(--clr-accent-darker);
     background-color: var(--clr-accent-darkest);
@@ -333,29 +334,29 @@ form {
     color: var(--clr-text);
 }
 
-#form-container input::placeholder {
+#c-form__container input::placeholder {
     color: var(--clr-text-placeholder);
 }
 
-#user-todo-input {
+#c-form__title-input {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
 
-#form-container.pendingSubmit {
+#c-form__container.pendingSubmit {
     max-height: 280px;
 }
 
-#form-container:focus-within {
+#c-form__container:focus-within {
     max-height: 280px;
 }
 
-#radio-container {
+#c-form__radio-container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
 }
 
-#radio-container input[type="radio"] {
+#c-form__radio-container input[type="radio"] {
     appearance: none;
     width: 100%;
     height: 5rem;
@@ -364,7 +365,7 @@ form {
     cursor: pointer;
 }
 
-#radio-container input[type="radio"]::after {
+#c-form__radio-container input[type="radio"]::after {
     content: url("https://api.iconify.design/eva/checkmark-circle-outline.svg?color=white");
     scale: 0;
     rotate: 180deg;
@@ -373,25 +374,25 @@ form {
     margin-top: 5px;
 }
 
-#radio-container input[type="radio"]:checked::after {
+#c-form__radio-container input[type="radio"]:checked::after {
     scale: 2;
     rotate: 0deg;
     opacity: 1;
 }
 
-#todo-deadline::selection {
+#c-form__deadline-input::selection {
     background-color: transparent;
 }
 
-#todo-deadline[type="datetime-local"] {
+#c-form__deadline-input[type="datetime-local"] {
     position: relative;
 }
 
-#todo-deadline[type="datetime-local"]::after {
+#c-form__deadline-input[type="datetime-local"]::after {
     content: url("https://api.iconify.design/akar-icons/calendar.svg?color=white");
 }
 
-#todo-deadline[type="datetime-local"]::-webkit-calendar-picker-indicator {
+#c-form__deadline-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     position: absolute;
     top: 0;
@@ -403,7 +404,7 @@ form {
     background: transparent;
 }
 
-#submit-btn {
+#c-form__submit-btn {
     padding: 2rem;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -416,13 +417,13 @@ form {
     text-transform: uppercase;
 }
 
-#submit-btn.isActive {
+#c-form__submit-btn.isActive {
     background-color: var(--clr-accent-darker);
 }
 
 /** Todo section styles */
 
-.delete-prompt {
+.c-delete-prompt {
     position: fixed;
     width: 25rem;
     display: flex;
@@ -437,19 +438,19 @@ form {
     box-shadow: 0px 0px 20px var(--clr-accent-darkest);
 }
 
-.delete-prompt span {
+.c-delete-prompt span {
     color: var(--clr-text);
     font-size: 2rem;
     margin-bottom: 1rem;
 }
 
-.delete-prompt .button-wrapper {
+.c-delete-prompt .c-delete-prompt__button-wrapper {
     margin: 0 0.5rem;
     display: flex;
     justify-content: space-between;
 }
 
-.delete-prompt button {
+.c-delete-prompt button {
     padding: 1rem 1.5rem;
     border-radius: 5px;
     color: var(--clr-text);
@@ -457,24 +458,24 @@ form {
     cursor: pointer;
 }
 
-.fade-enter-active,
-.fade-leave-active {
+.t-fade-up-enter-active,
+.t-fade-up-leave-active {
     transition: all 0.3s;
 }
 
-.fade-enter,
-.fade-leave-to {
+.t-fade-up-enter,
+.t-fade-up-leave-to {
     opacity: 0;
     translate: -50% 50%;
 }
 
-#todo-filter-button-container {
+#c-todo-filter__button-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-#todo-filter-button-container button {
+#c-todo-filter__button-container button {
     padding: 1rem 2rem;
     color: var(--clr-text);
     background-color: var(--clr-primary);
@@ -483,7 +484,7 @@ form {
     cursor: pointer;
 }
 
-#todo-list {
+#c-todo-list {
     list-style-type: none;
     display: flex;
     flex-direction: column;
